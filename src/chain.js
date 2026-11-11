@@ -58,7 +58,7 @@ export const balanceOf = (token, who) =>
   client.readContract({ address: token, abi: erc20, functionName: "balanceOf", args: [who] });
 
 // Latest vibe/vibe launches, newest first, with names and symbols.
-export async function recentLaunches(count = 8) {
+export async function recentLaunches(count = 12) {
   const total = await client.readContract({ address: CONFIG.factory, abi: factoryAbi, functionName: "launchCount" });
   const ids = [];
   for (let i = total; i > 0n && ids.length < count; i--) ids.push(i - 1n);
