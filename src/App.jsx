@@ -51,7 +51,7 @@ export default function App() {
       </nav>
 
       <header>
-        <h1>Watch vibe/vibe<br />on-chain, live.</h1>
+        <h1>Watch vibe/vibe<br /><span>on-chain, live.</span></h1>
         <p>Every new launch, in one feed. Hold VUE to open the members room.</p>
         {error && <p className="err">{error}</p>}
       </header>
