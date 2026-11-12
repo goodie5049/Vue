@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import { CONFIG, balanceOf, connectWallet, readToken, recentLaunches, recentTransfers, short } from "./chain.js";
 
@@ -18,6 +18,31 @@ export default function App() {
   const [transfers, setTransfers] = useState({ items: [], error: "" });
   const [error, setError] = useState("");
   const [updated, setUpdated] = useState(null);
+  const [menu, setMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!menu) return;
+    const close = (e) => { if (e.type === "keydown" ? e.key === "Escape" : !menuRef.current?.contains(e.target)) setMenu(false); };
+    document.addEventListener("mousedown", close); document.addEventListener("keydown", close);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", close); };
+  }, [menu]);
+
+  useEffect(() => {
+    const eth = window.ethereum; if (!eth?.on) return;
+    const onAcc = (accs) => { setAccount(accs[0] || null); if (!accs[0]) setBalance(null); };
+    eth.on("accountsChanged", onAcc);
+    return () => eth.removeListener?.("accountsChanged", onAcc);
+  }, []);
+
+  async function disconnect() {
+    setMenu(false); setAccount(null); setBalance(null);
+    try { await window.ethereum?.request({ method: "wallet_revokePermissions", params: [{ eth_accounts: {} }] }); } catch {}
+  }
+  async function copy() {
+    try { await navigator.clipboard.writeText(account); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
+  }
 
   const refresh = useCallback(async () => {
     recentLaunches().then((f) => { setFeed({ ...f, error: "" }); setUpdated(new Date()); })
@@ -46,7 +71,14 @@ export default function App() {
         <span className="net"><i />Robinhood Chain Testnet</span>
         <span className="grow" />
         {account
-          ? <a className="pill" href={link("address", account)}>{short(account)}</a>
+          ? <div className="acct" ref={menuRef}>
+              <button className="pill" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>{short(account)} ▾</button>
+              {menu && <div className="menu" role="menu">
+                <button role="menuitem" onClick={copy}>{copied ? "Copied" : "Copy address"}</button>
+                <a role="menuitem" href={link("address", account)} target="_blank" rel="noreferrer">View on explorer</a>
+                <button role="menuitem" className="danger" onClick={disconnect}>Disconnect</button>
+              </div>}
+            </div>
           : <button onClick={connect}>Connect wallet</button>}
       </nav>
 

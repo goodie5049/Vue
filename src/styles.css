@@ -39,3 +39,8 @@ footer{margin-top:2rem;color:var(--mute);font-size:.9rem}
 
 h1 span{background:linear-gradient(90deg,var(--accent),var(--glow));-webkit-background-clip:text;background-clip:text;color:transparent}
 .stat:first-child b{color:var(--accent)}
+.acct{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + .5rem);min-width:12rem;background:#121730;border:1px solid var(--line);border-radius:.75rem;padding:.35rem;display:grid;gap:.1rem;box-shadow:0 12px 40px rgba(0,0,0,.45);z-index:10}
+.menu button,.menu a{background:none;color:var(--ink);text-align:left;font:inherit;font-weight:500;border-radius:.5rem;padding:.55rem .75rem;text-decoration:none;cursor:pointer}
+.menu button:hover,.menu a:hover{background:rgba(124,140,255,.16)}
+.menu .danger{color:var(--warn)}
